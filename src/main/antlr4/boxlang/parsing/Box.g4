@@ -1,0 +1,3 @@
+grammar Box;
+
+r : 'hello';
