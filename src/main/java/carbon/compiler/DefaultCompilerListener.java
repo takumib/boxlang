@@ -1,8 +1,5 @@
 package carbon.compiler;
 
-import carbon.CarbonCompiler;
-import org.stringtemplate.v4.ST;
-
 public class DefaultCompilerListener implements CarbonCompilerListener {
 
     private final CarbonCompiler compiler;
