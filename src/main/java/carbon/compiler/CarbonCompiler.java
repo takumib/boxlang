@@ -1,4 +1,4 @@
-package carbon;
+package carbon.compiler;
 
 import carbon.parsing.CarbonLexer;
 import carbon.parsing.CarbonParser;
@@ -16,7 +16,6 @@ import java.io.IOException;
 public class CarbonCompiler {
     public static void main(String[] args) {
         try {
-
             ANTLRInputStream input = new ANTLRFileStream(args[0]);
             CarbonLexer lexer = new CarbonLexer(input);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
