@@ -1,4 +1,4 @@
-package carbon;
+package carbon.compiler;
 
 import carbon.compiler.DefaultCompilerListener;
 import carbon.compiler.ErrorKind;
