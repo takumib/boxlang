@@ -1,4 +1,4 @@
-grammar Box;
+grammar Carbon;
 
 file : expr EOF;
 
