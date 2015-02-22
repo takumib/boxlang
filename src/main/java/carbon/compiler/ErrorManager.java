@@ -1,6 +1,5 @@
 package carbon.compiler;
 
-import carbon.CarbonCompiler;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;

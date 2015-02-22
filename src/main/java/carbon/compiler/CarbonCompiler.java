@@ -1,15 +1,10 @@
-package carbon;
+package carbon.compiler;
 
-import carbon.compiler.DefaultCompilerListener;
-import carbon.compiler.ErrorKind;
-import carbon.compiler.ErrorManager;
 import carbon.parsing.CarbonLexer;
 import carbon.parsing.CarbonParser;
 import org.antlr.v4.runtime.ANTLRFileStream;
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.File;
 import java.io.IOException;
