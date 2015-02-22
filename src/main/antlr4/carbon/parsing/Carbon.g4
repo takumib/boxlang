@@ -1,14 +1,37 @@
 grammar Carbon;
 
-file : decl EOF;
+file : vardecl EOF;
 
-stmt
-    : 'print' expr
-    |
+vardecl
+    : 'let' Identifier ':' type ('=' expr)? ';'
     ;
 
-decl
-    : 'let' Identifier ':' type ('=' expr)? ';'
+funcdecl
+    : ('@' funcModifier)? 'func' Identifier '(' ')' (':' returnType)? ';'
+    ;
+
+funcdef
+    : 'func' Identifier '(' ')' '{' stmtBlock '}'
+    ;
+
+funcModifier
+    : 'public'
+    | 'private'
+    ;
+
+returnType
+    : 'void'
+    | type
+    ;
+
+stmtBlock
+    : stmt+
+    ;
+
+stmt
+    : 'print' expr ';'
+    | vardecl
+    | Identifier '=' expr ';'
     ;
 
 type
@@ -24,6 +47,7 @@ expr
     | expr op=('+' | '-') expr               #InfixExpr
     | expr op=('<' | '>' | '<=' | '>=') expr #RelationalExpr
     | expr op=('==' | '!=') expr             #RelationalExpr
+    | '(' expr ')'                           #ParenExpr
     | primary                                #PrimaryExpr
     ;
 
@@ -31,6 +55,7 @@ primary
     : Integer
     | Boolean
     | Float
+    | Char
     | String
     | Identifier
     ;
@@ -52,6 +77,10 @@ String
     : '"' LETTER+ '"'
     ;
 
+Char
+    : '\'' LETTER '\''
+    ;
+
 Identifier
     : LETTER+ (DIGIT | LETTER)*
     ;
@@ -67,3 +96,8 @@ LETTER
     ;
 
 WS : [ \t\r\n] -> skip;
+
+PLUS : '+';
+MINUS : '-';
+MUL : '*';
+DIV : '/';

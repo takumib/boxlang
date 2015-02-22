@@ -21,13 +21,13 @@ public class SymbolTableListener extends CarbonBaseListener {
     }
 
     @Override
-    public void enterDecl(CarbonParser.DeclContext ctx) {
-        super.enterDecl(ctx);
+    public void enterVardecl(CarbonParser.VardeclContext ctx) {
+        super.enterVardecl(ctx);
     }
 
     @Override
-    public void exitDecl(CarbonParser.DeclContext ctx) {
-        super.exitDecl(ctx);
+    public void exitVardecl(CarbonParser.VardeclContext ctx) {
+        super.exitVardecl(ctx);
     }
 
     @Override
