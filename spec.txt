@@ -1,0 +1,27 @@
+Carbon Language Specification Notes:
+
+(my thought process so far)
+
+Primitive Types:
+  int
+  float
+  char
+  string
+
+Variable Declarations:
+  simple decl: let x : int = 3;
+  array decl:  let arr : [int] = {1, 2, 3};
+  
+Function Declaration:
+  simple decl: func foo();
+  annotated decl: @public func foo() : int;
+  with args: func foo(int, int, int) : void;
+  
+Function Definition:
+  (Function definitions do not need any annotations and should
+  just refer to the declaration for that)
+  func foo() {}
+  
+Statements:
+  Print: print expr;
+  Assign: x = 3; 
