@@ -1,6 +1,6 @@
 grammar Carbon;
 
-file : expr EOF;
+file : decl EOF;
 
 stmt
     : 'print' expr
@@ -8,7 +8,7 @@ stmt
     ;
 
 decl
-    : 'let' Identifier ':' type ('=' expr)?
+    : 'let' Identifier ':' type ('=' expr)? ';'
     ;
 
 type
@@ -20,7 +20,7 @@ type
     ;
 
 expr
-    : expr op=('*' | '/') expr               #InfixExp
+    : expr op=('*' | '/') expr               #InfixExpr
     | expr op=('+' | '-') expr               #InfixExpr
     | expr op=('<' | '>' | '<=' | '>=') expr #RelationalExpr
     | expr op=('==' | '!=') expr             #RelationalExpr
@@ -31,6 +31,7 @@ primary
     : Integer
     | Boolean
     | Float
+    | String
     | Identifier
     ;
 
@@ -45,6 +46,10 @@ Boolean
 
 Float
     : DIGIT+ '.' DIGIT+
+    ;
+
+String
+    : '"' LETTER+ '"'
     ;
 
 Identifier
