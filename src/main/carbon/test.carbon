@@ -1,6 +1,6 @@
-1
+import std, test
 
-@abstract
-class Foo {
-
-}
+class Foo:
+    func foo():
+        let x : int = 3;
+    end

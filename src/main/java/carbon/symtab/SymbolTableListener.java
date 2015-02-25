@@ -33,6 +33,10 @@ package carbon.symtab;
 import carbon.parsing.CarbonBaseListener;
 import carbon.parsing.CarbonParser;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by bolte on 2/21/15.
@@ -41,62 +45,32 @@ public class SymbolTableListener extends CarbonBaseListener {
     private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
 
     @Override
-    public void enterFile(CarbonParser.FileContext ctx) {
-        super.enterFile(ctx);
+    public void exitClassImports(CarbonParser.ClassImportsContext ctx) {
+        System.out.println("imported:");
+        for(Iterator<TerminalNode> iter = ctx.Identifier().iterator(); iter.hasNext();) {
+            System.out.println(iter.next().toString());
+        }
+        System.out.println();
     }
 
     @Override
-    public void exitFile(CarbonParser.FileContext ctx) {
-        super.exitFile(ctx);
+    public void enterClassDecl(CarbonParser.ClassDeclContext ctx) {
+        System.out.println("Class name: ");
+        System.out.println(ctx.Identifier().toString());
+        System.out.println();
     }
 
     @Override
-    public void enterVardecl(CarbonParser.VardeclContext ctx) {
-        super.enterVardecl(ctx);
+    public void enterFuncDef(CarbonParser.FuncDefContext ctx) {
+        System.out.println("Function name: " + ctx.Identifier().toString());
+        System.out.println();
     }
 
     @Override
-    public void exitVardecl(CarbonParser.VardeclContext ctx) {
-        super.exitVardecl(ctx);
-    }
-
-    @Override
-    public void enterType(CarbonParser.TypeContext ctx) {
-        super.enterType(ctx);
-    }
-
-    @Override
-    public void exitType(CarbonParser.TypeContext ctx) {
-        super.exitType(ctx);
-    }
-
-    @Override
-    public void enterPrimaryExpr(CarbonParser.PrimaryExprContext ctx) {
-        super.enterPrimaryExpr(ctx);
-    }
-
-    @Override
-    public void exitPrimaryExpr(CarbonParser.PrimaryExprContext ctx) {
-        super.exitPrimaryExpr(ctx);
-    }
-
-    @Override
-    public void enterInfixExpr(CarbonParser.InfixExprContext ctx) {
-        super.enterInfixExpr(ctx);
-    }
-
-    @Override
-    public void exitInfixExpr(CarbonParser.InfixExprContext ctx) {
-        super.exitInfixExpr(ctx);
-    }
-
-    @Override
-    public void enterPrimary(CarbonParser.PrimaryContext ctx) {
-        super.enterPrimary(ctx);
-    }
-
-    @Override
-    public void exitPrimary(CarbonParser.PrimaryContext ctx) {
-        super.exitPrimary(ctx);
+    public void exitVarDecl(CarbonParser.VarDeclContext ctx) {
+        System.out.println("Variable name: " + ctx.Identifier().toString());
+        System.out.println("Type: " + ctx.type().getText());
+        System.out.println("Value: " + ctx.expr().getText());
+        System.out.println();
     }
 }
