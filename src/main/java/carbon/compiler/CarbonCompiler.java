@@ -38,6 +38,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,10 +46,34 @@ public class CarbonCompiler {
 
     public static String VERSION = "2.22.15a";
 
+    public static enum OptionArgType { NONE, STRING } // NONE implies boolean
+    public static class Option {
+        String fieldName;
+        String name;
+        OptionArgType argType;
+        String description;
+
+        public Option(String fieldName, String name, String description) {
+            this(fieldName, name, OptionArgType.NONE, description);
+        }
+
+        public Option(String fieldName, String name, OptionArgType argType, String description) {
+            this.fieldName = fieldName;
+            this.name = name;
+            this.argType = argType;
+            this.description = description;
+        }
+    }
+
+    public static Option[] optionDefs = {
+            new Option("longMessages", "-longMessages", "show exception details on errors"),
+    };
+
     public final ErrorManager errorManager;
     public final String[] args;
 
     public boolean helpFlag = false;
+    public boolean longMessages = false;
 
     public final DefaultCompilerListener defaultListener =
             new DefaultCompilerListener(this);
@@ -67,13 +92,57 @@ public class CarbonCompiler {
                 if (!targetFiles.contains(arg)) {
                     targetFiles.add(arg);
                 }
+                continue;
             }
+            boolean found = false;
+            int i = 0;
+            for (Option o : optionDefs) {
+                if ( arg.equals(o.name) ) {
+                    found = true;
+                    String argValue = null;
+                    if ( o.argType==OptionArgType.STRING ) {
+                        argValue = args[i];
+                        i++;
+                    }
+                    // use reflection to set field
+                    Class<? extends CarbonCompiler> c = this.getClass();
+                    try {
+                        Field f = c.getField(o.fieldName);
+                        if ( argValue==null ) {
+                            if ( arg.startsWith("-no-") ) f.setBoolean(this, false);
+                            else f.setBoolean(this, true);
+                        }
+                        else f.set(this, argValue);
+                    }
+                    catch (Exception e) {
+                        errorManager
+                                .toolError(ErrorKind.INTERNAL_ERROR,
+                                        "can't access field " + o.fieldName);
+                    }
+                }
+            }
+            if ( !found ) {
+                errorManager.toolError(ErrorKind.INVALID_CMDLINE_ARG, arg);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        CarbonCompiler carbon = new CarbonCompiler(args);
+        if (args.length == 0) {
+            carbon.help();
+            carbon.exit(0);
+        }
+        carbon.version();
+        carbon.processCommandLineTargets();
+
+        if (carbon.errorManager.getErrorCount() > 0) {
+            carbon.exit(1);
         }
     }
 
     public void processCommandLineTargets() {
         List<ParseTree> targets = getTrees();
-
         //analysis here.
     }
 
@@ -103,26 +172,29 @@ public class CarbonCompiler {
     public void log(String msg) {
     }
 
-    public static void main(String[] args) {
-        CarbonCompiler carbon = new CarbonCompiler(args);
-
-        if (args.length == 0) {
-            carbon.help();
-            carbon.exit(0);
-        }
-        carbon.processCommandLineTargets();
-
-        if (carbon.errorManager.getErrorCount() > 0) {
-            carbon.exit(1);
-        }
+    public void version() {
+        info("Carbon Compiler Version " + VERSION);
     }
 
     public void help() {
-        info("Carbon Compiler Version " + VERSION);
+        version();
+        for (Option o : optionDefs) {
+            String name = o.name + (o.argType!=OptionArgType.NONE? " ___" : "");
+            String s = String.format(" %-19s %s", name, o.description);
+            info(s);
+        }
     }
 
     public void info(String msg) {
         defaultListener.info(msg);
+    }
+
+    public void error(CarbonMessage msg) {
+        defaultListener.error(msg);
+    }
+
+    public void warning(CarbonMessage msg) {
+        defaultListener.warning(msg);
     }
 
     public void exit(int e) {

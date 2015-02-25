@@ -46,7 +46,26 @@ public enum ErrorKind {
      */
     CANNOT_OPEN_FILE(2, "cannot find or open file: <arg>"
             + "<if(exception&&verbose)>; reason: <exception><endif>",
-            ErrorSeverity.ERROR);
+            ErrorSeverity.ERROR),
+
+    /**
+     * <p>Compiler error 3: invalid command-line argument:
+     * <em>argument</em>.</p>
+     */
+    INVALID_CMDLINE_ARG(3, "invalid command line argument: <arg>",
+            ErrorSeverity.ERROR),
+
+    /**
+     * <p>Compiler error 4: internal error: <em>message</em>.</p>
+     */
+    INTERNAL_ERROR(4, "internal error: <arg> <arg2><if(exception&&verbose)>: " +
+            "<exception>" +
+            "<stackTrace; separator=\"\\n\"><endif>", ErrorSeverity.ERROR),
+
+    /**
+     * <p>Compiler error 3: syntax error: <em>errormsg</em>.</p>
+     */
+    SYNTAX_ERROR(3, "syntax error: <arg>", ErrorSeverity.ERROR);
 
     public final int code;
     public final String message;

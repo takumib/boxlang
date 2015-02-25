@@ -1,6 +1,1 @@
-1
-
-@abstract
-class Foo {
-
-}
+let x : int;

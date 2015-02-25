@@ -30,6 +30,8 @@
  */
 package carbon.compiler;
 
+import org.stringtemplate.v4.ST;
+
 public class DefaultCompilerListener implements CarbonCompilerListener {
 
     private final CarbonCompiler compiler;
@@ -39,8 +41,13 @@ public class DefaultCompilerListener implements CarbonCompilerListener {
     }
 
     @Override
-    public void error(CarbonMessage m) {
-
+    public void error(CarbonMessage msg) {
+        ST msgST = compiler.errorManager.getMessageTemplate(msg);
+        String outputMsg = msgST.render();
+        if (compiler.errorManager.formatWantsSingleLineMessage()) {
+            outputMsg = outputMsg.replace('\n', ' ');
+        }
+        System.err.println(outputMsg);
     }
 
     @Override
@@ -53,6 +60,11 @@ public class DefaultCompilerListener implements CarbonCompilerListener {
 
     @Override
     public void warning(CarbonMessage msg) {
-
+        ST msgST = compiler.errorManager.getMessageTemplate(msg);
+        String outputMsg = msgST.render();
+        if (compiler.errorManager.formatWantsSingleLineMessage()) {
+            outputMsg = outputMsg.replace('\n', ' ');
+        }
+        System.err.println(outputMsg);
     }
 }
