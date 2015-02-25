@@ -30,18 +30,31 @@
  */
 grammar Carbon;
 
-file : vardecl EOF;
+file : classDecl EOF;
 
-vardecl
+classDecl
+    : classImports ('@' classModifier)? 'class' Identifier ':' (funcDecl | funcDef)*
+    ;
+
+classImports
+    : ('import' Identifier)*
+    | 'import' Identifier (',' Identifier)*
+    ;
+
+classModifier
+    : 'interface'
+    ;
+
+varDecl
     : 'let' Identifier ':' type ('=' expr)? ';'
     ;
 
-funcdecl
+funcDecl
     : ('@' funcModifier)? 'func' Identifier '(' ')' (':' returnType)? ';'
     ;
 
-funcdef
-    : 'func' Identifier '(' ')' '{' stmtBlock '}'
+funcDef
+    : ('@' funcModifier)? 'func' Identifier '(' ')' (':' returnType)? ':' stmtBlock? 'end'
     ;
 
 funcModifier
@@ -54,14 +67,30 @@ returnType
     | type
     ;
 
+forLoop
+    : 'for' Identifier ':' type ('=' expr)? 'to' expr ':' stmtBlock 'end'
+    ;
+
+whileLoop
+    : 'while' expr ':' stmtBlock 'end'
+    ;
+
+condStmt
+    : 'if' expr 'then' ':' stmtBlock? 'end'
+    ;
+
 stmtBlock
     : stmt+
     ;
 
 stmt
     : 'print' expr ';'
-    | vardecl
+    | varDecl
     | Identifier '=' expr ';'
+    | condStmt
+    | forLoop
+    | whileLoop
+    | 'return' expr ';'
     ;
 
 type
