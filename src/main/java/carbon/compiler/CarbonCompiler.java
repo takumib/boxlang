@@ -37,6 +37,8 @@ import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroupFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +79,8 @@ public class CarbonCompiler {
         List<ParseTree> targets = getTrees();
 
         //analysis here.
-        ParseTreeWalker.DEFAULT.walk(new SymbolTableListener(), targets.get(0));
+        //ParseTreeWalker.DEFAULT.walk(new SymbolTableListener(), targets.get(0));
+
     }
 
     public List<ParseTree> getTrees() {

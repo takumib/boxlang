@@ -28,51 +28,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package carbon.symtab;
+package carbon.visitor;
 
-import carbon.parsing.CarbonBaseListener;
-import carbon.parsing.CarbonParser;
-import org.antlr.v4.runtime.misc.TestRig;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import java.util.Iterator;
-import java.util.List;
+import carbon.parsing.CarbonBaseVisitor;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroupFile;
 
 /**
- * Created by bolte on 2/21/15.
+ * @author bolte
+ *
+ * A pretty print visitor for Carbon.
+ *
  */
-public class SymbolTableListener extends CarbonBaseListener {
-    private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
+public class StringTemplateTest extends CarbonBaseVisitor<ST> {
+    public StringTemplateTest() {
+        STGroupFile f = new STGroupFile("carbon/templates/visitor/hello.stg");
+        ST hello = f.getInstanceOf("decl");
+        hello.add("type", "int");
+        hello.add("name", "x");
+        hello.add("value", 0);
+        System.out.println(hello.render());
 
-    @Override
-    public void exitClassImports(CarbonParser.ClassImportsContext ctx) {
-        System.out.println("imported:");
-        for(TerminalNode t : ctx.Identifier()) {
-            System.out.println(t);
-        }
-        
-        System.out.println();
+        ST st = new ST("<items:{it | <it.id>: <it.lastName>, <it.firstName>\n}>");
+        st.addAggr("items.{firstName, lastName, id}", "Takumi", "Bolte", "tbolte");
+        System.out.println(st.render());
+
+        ST st2 = new ST("<[\"a\",\"b\"]:{v | <v> = <i>; }>");
+        System.out.println(st2.render());
+
+        int[] a = { 3,9,20,2,1,4,6,32,5,6,77,888,
+                2,1,6,32,5,6,77,4,9,20,2,1,4,63,9,20,2,1,
+                4,6,32,5,6,77,6,32,5,6,77,3,9,20,2,1,4,6,
+                32,5,6,77,888,1,6,32,5 };
+
+        ST starr = new ST("int[] a = { <values; wrap, anchor, separator=\",\">};");
+        starr.add("values", a);
+        System.out.println(starr.render(40));
     }
 
-    @Override
-    public void enterClassDecl(CarbonParser.ClassDeclContext ctx) {
-        System.out.println("Class name: ");
-        System.out.println(ctx.Identifier().toString());
-        System.out.println();
-    }
-
-    @Override
-    public void enterFuncDef(CarbonParser.FuncDefContext ctx) {
-        System.out.println("Function name: " + ctx.Identifier().toString());
-        System.out.println();
-    }
-
-    @Override
-    public void exitVarDecl(CarbonParser.VarDeclContext ctx) {
-        System.out.println("Variable name: " + ctx.Identifier().toString());
-        System.out.println("Type: " + ctx.type().getText());
-        System.out.println("Value: " + ctx.expr().getText());
-        System.out.println();
+    public static void main(String[] args) {
+        new StringTemplateTest();
     }
 }
