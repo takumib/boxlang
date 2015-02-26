@@ -33,6 +33,7 @@ package carbon.compiler;
 import carbon.parsing.CarbonLexer;
 import carbon.parsing.CarbonParser;
 import carbon.symtab.SymbolTableListener;
+import carbon.visitor.PrintVisitor;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -80,7 +81,8 @@ public class CarbonCompiler {
 
         //analysis here.
         //ParseTreeWalker.DEFAULT.walk(new SymbolTableListener(), targets.get(0));
-
+        PrintVisitor p = new PrintVisitor();
+        p.visit(targets.get(0));
     }
 
     public List<ParseTree> getTrees() {

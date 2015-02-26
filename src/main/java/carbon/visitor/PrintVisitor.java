@@ -28,60 +28,173 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package carbon.visitor;
 
 import carbon.parsing.CarbonBaseVisitor;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroupFile;
+import carbon.parsing.CarbonParser;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
- * @author bolte
- *
- * This is a print visitor for Carbon.
+ * A print visitor implementation for Carbon.
  */
-public class PrintVisitor extends CarbonBaseVisitor {
+public class PrintVisitor extends CarbonBaseVisitor<Void> {
 
-    public PrintVisitor() {
-        STGroupFile f = new STGroupFile("main/resources/carbon/templates/visitor/print.stg");
-        ST var = f.getInstanceOf("vardecl");
-        var.add("name", "x");
-        var.add("type", "int");
-        var.add("value", 0);
-        System.out.println("variable declaration:");
-        System.out.println(var.render());
-
-        System.out.println();
-
-        ST func = f.getInstanceOf("funcdecl");
-        func.add("modifier", "private");
-        func.add("name", "foo");
-        func.add("ret", "int");
-        System.out.println("function declaration:");
-        System.out.println(func.render());
-
-        System.out.println();
-
-        ST funcdef = f.getInstanceOf("funcdef");
-        funcdef.add("modifier", "private");
-        funcdef.add("name", "foo");
-        funcdef.add("ret", "int");
-        funcdef.add("stmts", "print x;");
-        funcdef.add("stmts", "print y;");
-        System.out.println("function definition:");
-        System.out.println(funcdef.render());
-
-        System.out.println();
-
-        ST classdecl = f.getInstanceOf("classdecl");
-        classdecl.add("imports", "std");
-        classdecl.add("imports", "foo, bar");
-        classdecl.add("modifier", "private");
-        classdecl.add("name", "Foo");
-        System.out.println("class declaration:");
-        System.out.println(classdecl.render());
+    @Override
+    public Void visitClassImports(CarbonParser.ClassImportsContext ctx) {
+        for(TerminalNode id : ctx.Identifier()) {
+            visitTerminal(id);
+        }
+        return null;
     }
 
-    public static void main(String[] args) {
-        new PrintVisitor();
+    @Override
+    public Void visitClassDecl(CarbonParser.ClassDeclContext ctx) {
+        visit(ctx.classImports());
+        if(ctx.classModifier() != null) {
+            visit(ctx.classModifier());
+        }
+
+        String id = ctx.id.getText();
+        System.out.println(id);
+        visitTerminal(ctx.Identifier());
+        for(CarbonParser.FuncDeclContext fd : ctx.funcDecl()) {
+            visit(fd);
+        }
+
+        for(CarbonParser.FuncDefContext fd : ctx.funcDef()) {
+            visit(fd);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Void visitFuncDecl(CarbonParser.FuncDeclContext ctx) {
+        visit(ctx.funcModifier());
+        String id = ctx.id.getText();
+        System.out.println(id);
+        visit(ctx.funcModifier());
+        return null;
+    }
+
+    @Override
+    public Void visitFuncDef(CarbonParser.FuncDefContext ctx) {
+        if(ctx.funcModifier() != null) {
+            visit(ctx.funcModifier());
+        }
+        String id = ctx.id.getText();
+        System.out.println(id);
+        if(ctx.returnType() != null) {
+            visit(ctx.returnType());
+        }
+        visit(ctx.stmtBlock());
+        return null;
+    }
+
+    @Override
+    public Void visitStmtBlock(CarbonParser.StmtBlockContext ctx) {
+        for(CarbonParser.StmtContext stmt : ctx.stmt()) {
+            visit(stmt);
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitVarDecl(CarbonParser.VarDeclContext ctx) {
+        String id = ctx.id.getText();
+        System.out.println(id);
+        visit(ctx.type());
+        if(ctx.expr() != null) {
+            visit(ctx.expr());
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitVarDeclStmt(CarbonParser.VarDeclStmtContext ctx) {
+        visit(ctx.varDecl());
+        return null;
+    }
+
+    @Override
+    public Void visitAssignStmt(CarbonParser.AssignStmtContext ctx) {
+        String id = ctx.id.getText();
+        System.out.println(id);
+        visit(ctx.expr());
+
+        return null;
+    }
+
+    @Override
+    public Void visitType(CarbonParser.TypeContext ctx) {
+        switch(ctx.name.getText()) {
+            case "int": break;
+            case "float": break;
+            case "bool": break;
+            case "char": break;
+            case "string": break;
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitInfixExpr(CarbonParser.InfixExprContext ctx) {
+        visit(ctx.lhs);
+
+        switch(ctx.op.getType()) {
+            case CarbonParser.MUL: break;
+            case CarbonParser.DIV: break;
+            case CarbonParser.PLUS: break;
+            case CarbonParser.MINUS: break;
+        }
+
+        visit(ctx.rhs);
+
+        return null;
+    }
+
+    @Override
+    public Void visitRelationalExpr(CarbonParser.RelationalExprContext ctx) {
+        visit(ctx.lhs);
+
+        switch(ctx.op.getType()) {
+            case CarbonParser.LESS : break;
+            case CarbonParser.GREATER : break;
+            case CarbonParser.LESSEQ : break;
+            case CarbonParser.GREATEREQ : break;
+            case CarbonParser.EQ : break;
+            case CarbonParser.NOTEQ : break;
+        }
+
+        visit(ctx.rhs);
+
+        return null;
+    }
+
+    @Override
+    public Void visitParenExpr(CarbonParser.ParenExprContext ctx) {
+        visit(ctx.expr());
+        return null;
+    }
+
+    @Override
+    public Void visitPrimaryExpr(CarbonParser.PrimaryExprContext ctx) {
+        visit(ctx.primary());
+        return null;
+    }
+
+    @Override
+    public Void visitPrimary(CarbonParser.PrimaryContext ctx) {
+        System.out.println(ctx.getText());
+        return null;
+    }
+
+    @Override
+    public Void visitTerminal(TerminalNode node) {
+        if(node.getSymbol().getType() == CarbonParser.Identifier) {
+            System.out.println(node.getSymbol().getText());
+        }
+        return null;
     }
 }

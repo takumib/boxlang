@@ -33,7 +33,7 @@ grammar Carbon;
 file : classDecl EOF;
 
 classDecl
-    : classImports ('@' classModifier)? 'class' Identifier ':' (funcDecl | funcDef)*
+    : classImports ('@' classModifier)? 'class' id=Identifier ':' (funcDecl | funcDef)*
     ;
 
 classImports
@@ -46,15 +46,15 @@ classModifier
     ;
 
 varDecl
-    : 'let' Identifier ':' type ('=' expr)? ';'
+    : 'let' id=Identifier ':' type ('=' expr)? ';'
     ;
 
 funcDecl
-    : ('@' funcModifier)? 'func' Identifier '(' ')' (':' returnType)? ';'
+    : ('@' funcModifier)? 'func' id=Identifier '(' ')' (':' returnType)? ';'
     ;
 
 funcDef
-    : ('@' funcModifier)? 'func' Identifier '(' ')' (':' returnType)? ':' stmtBlock? 'end'
+    : ('@' funcModifier)? 'func' id=Identifier '(' ')' (':' returnType)? ':' stmtBlock? 'end'
     ;
 
 funcModifier
@@ -84,30 +84,30 @@ stmtBlock
     ;
 
 stmt
-    : 'print' expr ';'
-    | varDecl
-    | Identifier '=' expr ';'
-    | condStmt
-    | forLoop
-    | whileLoop
-    | 'return' expr ';'
+    : 'print' expr ';'          #PrintStmt
+    | varDecl                   #VarDeclStmt
+    | id=Identifier '=' expr ';'   #AssignStmt
+    | condStmt                  #Cond
+    | forLoop                   #For
+    | whileLoop                 #While
+    | 'return' expr ';'         #returnStmt
     ;
 
 type
-    : 'int'
-    | 'float'
-    | 'bool'
-    | 'char'
-    | 'string'
+    : name='int'
+    | name='float'
+    | name='bool'
+    | name='char'
+    | name='string'
     ;
 
 expr
-    : expr op=('*' | '/') expr               #InfixExpr
-    | expr op=('+' | '-') expr               #InfixExpr
-    | expr op=('<' | '>' | '<=' | '>=') expr #RelationalExpr
-    | expr op=('==' | '!=') expr             #RelationalExpr
-    | '(' expr ')'                           #ParenExpr
-    | primary                                #PrimaryExpr
+    : lhs=expr op=('*' | '/') rhs=expr               #InfixExpr
+    | lhs=expr op=('+' | '-') rhs=expr               #InfixExpr
+    | lhs=expr op=('<' | '>' | '<=' | '>=') rhs=expr #RelationalExpr
+    | lhs=expr op=('==' | '!=') rhs=expr             #RelationalExpr
+    | '(' expr ')'                                   #ParenExpr
+    | primary                                        #PrimaryExpr
     ;
 
 primary
@@ -160,3 +160,9 @@ PLUS : '+';
 MINUS : '-';
 MUL : '*';
 DIV : '/';
+LESS : '<';
+GREATER : '>';
+LESSEQ : '<=';
+GREATEREQ : '>=';
+EQ : '==';
+NOTEQ : '!=';

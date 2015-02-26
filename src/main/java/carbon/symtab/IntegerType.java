@@ -1,6 +1,6 @@
 /*
  * [The "BSD license"]
- * Copyright (c) 2014 Takumi Bolte, Dan Welch
+ * Copyright (c) 2015 Takumi Bolte, Dan Welch
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,16 +28,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package carbon.symtab;
 
-import carbon.symtab.Type;
 /**
- * Created by bolte on 2/21/15.
+ * Created by bolte on 2/26/15.
  */
 public class IntegerType extends Type {
-
-    public IntegerType() {
-        type = Literal.INT;
-    }
-
 }
